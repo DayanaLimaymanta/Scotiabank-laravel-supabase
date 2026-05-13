@@ -21,3 +21,11 @@ Route::get('/logout', [AuthController::class, 'cerrarSesion']);
 Route::get('/', function () {
     return redirect('/login');
 });
+
+// Ruta para ver el formulario de registro
+Route::get('/register', function () {
+    return view('register');
+});
+
+// Ruta para procesar el registro (usando el mismo controlador)
+Route::post('/register', [AuthController::class, 'procesarRegistro']);

@@ -33,4 +33,16 @@ class AuthController extends Controller
         Session::forget('usuario_logeado');
         return redirect('/login');
     }
+
+    public function procesarRegistro(Request $request) {
+    // Insertamos directamente en la tabla clientes de Supabase
+    \Illuminate\Support\Facades\DB::table('clientes')->insert([
+        'documento' => $request->documento,
+        'nombre'    => $request->nombre,
+        'password'  => $request->password, // Lo guardamos simple para tu clase
+    ]);
+
+    // Redirigimos al login con un mensaje de éxito
+    return redirect('/login')->with('success', 'Usuario registrado correctamente.');
+    }
 }
