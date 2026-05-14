@@ -17,7 +17,7 @@
         <div class="mb-8">
             <img src="https://www.scotiabank.com.pe/SVP/CapitalHumano/img/logo_scotiabank.png" alt="Scotiabank" class="h-8">
         </div>
-
+       
         <h1 class="text-3xl font-bold mb-2 text-gray-900">Inicia sesión</h1>
         <p class="text-gray-500 mb-6 text-sm">Ingresa tus datos para acceder a tu banca por internet.</p>
 
