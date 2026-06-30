@@ -21,8 +21,15 @@
             </div>
         </div>
        
-        <h1 class="text-3xl font-bold mb-2 text-gray-900">Inicia sesión</h1>
-        <p class="text-gray-500 mb-6 text-sm">Ingresa tus datos para acceder a tu banca por internet.</p>
+        @php
+            $rol = request()->query('rol', 'cliente');
+        @endphp
+        <h1 class="text-3xl font-bold mb-2 text-gray-900">
+            {{ $rol === 'asesor' ? 'Portal Asesores' : 'Inicia sesión' }}
+        </h1>
+        <p class="text-gray-500 mb-6 text-sm">
+            {{ $rol === 'asesor' ? 'Ingresa tus datos para acceder al core financiero.' : 'Ingresa tus datos para acceder a tu banca por internet.' }}
+        </p>
 
         @if(Session::has('error'))
             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 text-xs font-semibold animate-blink rounded">
@@ -30,8 +37,15 @@
             </div>
         @endif
 
+        @if(Session::has('success'))
+            <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 text-xs font-semibold rounded">
+                {{ Session::get('success') }}
+            </div>
+        @endif
+
         <form method="POST" action="/login" class="space-y-6">
             @csrf
+            <input type="hidden" name="rol" value="{{ $rol }}">
             
             <div class="flex flex-col border-b-2 border-gray-200 focus-within:border-[#EC111A] transition-all pb-1">
                 <label class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Tipo de documento</label>
@@ -75,6 +89,7 @@
             </button>
         </form>
 
+        @if($rol !== 'asesor')
         <div class="mt-8 p-4 border border-dashed border-gray-200 rounded-lg bg-gray-50 flex items-center space-x-4">
             <div class="bg-blue-100 p-2 rounded-full text-[#0082c3]">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
@@ -84,6 +99,14 @@
                 <a href="/register" class="text-[#0082c3] text-[11px] font-black uppercase hover:underline">Registrarse</a>
             </div>
         </div>
+        @else
+        <div class="mt-8 p-4 border border-dashed border-gray-200 rounded-lg bg-gray-50">
+            <p class="text-[11px] text-gray-600">
+                El personal del banco no se registra aquí: usa tu número de DNI tanto en
+                "Número de documento" como en "Contraseña".
+            </p>
+        </div>
+        @endif
     </div>
 
     <div class="hidden md:flex flex-1 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80');">

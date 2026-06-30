@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SolicitudController;
 
 // 1. INICIO: página de bienvenida con el menú interactivo
 Route::get('/', function () {
@@ -72,7 +73,10 @@ Route::get('/programas-lealtad', function () {
 
 // 3. LOGIN
 Route::get('/login', function () {
-    if (Session::has('usuario_logeado')) return redirect('/dashboard');
+    $rolSolicitado = request()->query('rol', 'cliente');
+    if (Session::has('usuario_logeado') && Session::get('usuario_rol') === $rolSolicitado) {
+        return redirect('/dashboard');
+    }
     return view('login');
 })->name('login'); 
 
@@ -86,9 +90,39 @@ Route::get('/register', function () {
 Route::post('/register', [AuthController::class, 'procesarRegistro']);
 
 // 5. PANEL PRIVADO Y CIERRE DE SESIÓN
-Route::get('/dashboard', function () {
-    if (!Session::has('usuario_logeado')) return redirect('/login');
-    return view('dashboard');
-});
+Route::get('/dashboard', [SolicitudController::class, 'mostrarDashboard']);
 
 Route::get('/logout', [AuthController::class, 'cerrarSesion']);
+
+// 6. SOLICITUDES DE CRÉDITO
+Route::get('/solicitar-prestamo', [SolicitudController::class, 'mostrarFormulario']);
+Route::post('/solicitar-prestamo', [SolicitudController::class, 'guardarSolicitud']);
+
+// Acciones operativas del día a día: el asesor de negocios busca
+// clientes, registra solicitudes, las desembolsa una vez aprobadas,
+// ve la evaluación crediticia y registra gestiones de cobranza (R2).
+// No aprueba montos ni decide acciones críticas de mora.
+Route::middleware('rol:asesor')->prefix('asesor')->group(function () {
+    Route::get('/buscar-cliente',       [SolicitudController::class, 'buscarCliente']);
+    Route::post('/registrar-solicitud', [SolicitudController::class, 'registrarSolicitud']);
+    Route::post('/desembolsar-solicitud', [SolicitudController::class, 'desembolsarSolicitud']);
+    Route::get('/evaluar-cliente',      [SolicitudController::class, 'evaluarCliente']);
+    Route::post('/registrar-gestion',   [SolicitudController::class, 'registrarGestion']);
+});
+
+// Aprobación de solicitudes: decisión final del crédito, atribución
+// de quien firma por la agencia (administrador) o por encima de ella
+// (gerencia). El asesor de negocios NO puede autoaprobar su propia
+// propuesta -- separación de funciones.
+Route::middleware('rol:administrador,gerencia')->prefix('asesor')->group(function () {
+    Route::post('/aprobar-solicitud', [SolicitudController::class, 'aprobarSolicitud']);
+});
+
+// Acciones críticas de cobranza (R3): derivar a judicial y castigar
+// son decisiones de riesgo de cartera -- atribución exclusiva del
+// área de Riesgos (más gerencia, que tiene autoridad sobre toda
+// decisión crítica del banco).
+Route::middleware('rol:riesgos,gerencia')->prefix('asesor')->group(function () {
+    Route::post('/derivar-judicial', [SolicitudController::class, 'derivarJudicial']);
+    Route::post('/castigar-credito', [SolicitudController::class, 'castigarCredito']);
+});

@@ -55,14 +55,14 @@
 
                 <!-- Dropdown Flotante Interactivo -->
                 <div id="layout-dropdown-acceder" class="hidden absolute right-0 top-full mt-2 w-48 bg-red-600 text-white rounded-lg shadow-2xl overflow-hidden z-[100] border border-red-500/30">
-                    <a href="{{ route('login') }}" class="block px-4 py-3 text-sm font-semibold border-b border-red-500/40 hover:bg-red-700 transition">
+                    <a href="{{ route('login') }}?rol=cliente" class="block px-4 py-3 text-sm font-semibold border-b border-red-500/40 hover:bg-red-700 transition">
                         Personas
                     </a>
-                    <a href="{{ route('login') }}" class="block px-4 py-3 text-sm font-semibold border-b border-red-500/40 hover:bg-red-700 transition">
+                    <a href="{{ route('login') }}?rol=cliente" class="block px-4 py-3 text-sm font-semibold border-b border-red-500/40 hover:bg-red-700 transition">
                         Negocios
                     </a>
-                    <a href="{{ route('login') }}" class="block px-4 py-3 text-sm font-semibold hover:bg-red-700 transition">
-                        Telebanking
+                    <a href="{{ route('login') }}?rol=asesor" class="block px-4 py-3 text-sm font-semibold hover:bg-red-700 transition">
+                        Portal Asesores
                     </a>
                 </div>
             </div>
